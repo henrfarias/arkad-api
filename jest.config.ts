@@ -3,26 +3,27 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type {Config} from 'jest';
+import type { Config } from 'jest'
 
 const config: Config = {
   bail: 0,
-  cacheDirectory: "/tmp/jest_rs",
+  cacheDirectory: '/tmp/jest_rs',
   clearMocks: true,
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   collectCoverage: false,
-  coveragePathIgnorePatterns: [
-    "/node_modules/"
-  ],
+  coveragePathIgnorePatterns: ['/node_modules/'],
   fakeTimers: {
-    "enableGlobally": false
+    enableGlobally: false
   },
-  maxWorkers: "50%",
+  maxWorkers: '50%',
   // modulePathIgnorePatterns: [],
   // resetMocks: true,
   restoreMocks: true,
   verbose: true,
-  transform: {}
-};
+  testEnvironment: 'node',
+  transform: {},
+  rootDir: '.',
+  modulePaths: ['<rootDir>']
+}
 
-export default config;
+export default config
