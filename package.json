@@ -25,12 +25,14 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "test": "jest __tests__/unit/*",
-    "test:int": "jest __tests/integration/*",
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest __tests__/unit/*",
+    "test:int": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest __tests__/integration/*",
     "prepare": "husky",
     "lint": "lint-staged --config .lintstagedrc.commit.json"
   },
   "dependencies": {
-    "csvtojson": "^2.0.10"
+    "csvtojson": "^2.0.10",
+    "pino": "^8.19.0",
+    "pino-pretty": "^11.0.0"
   }
 }
