@@ -1,5 +1,4 @@
-import { ReadStream, createReadStream, createWriteStream } from 'node:fs'
-import { dirname } from 'node:path'
+import { ReadStream, createReadStream } from 'node:fs'
 import { Readable } from 'node:stream'
 import { finished } from 'node:stream/promises'
 import {
@@ -13,21 +12,18 @@ export class BacenTreasurePaper {
     this.name = name
   }
 
-  public async download(fileName: string): Promise<string | null> {
-    const response = await fetch(
-      'https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/PrecoTaxaTesouroDireto.csv'
-    )
+  public async download(
+    path: string,
+    stream: Readable
+  ): Promise<undefined | null> {
+    const response = await fetch(path)
     if (response.status !== 200 || response.body === null) return null
-    const { pathname: currentPath } = new URL(import.meta.url)
-    const outputPath = `${dirname(currentPath)}/temp/${fileName}`
-    const writableStream = createWriteStream(outputPath)
     await finished(
       Readable.fromWeb(response.body).on('data', (chunk) => {
-        logger.debug(Buffer.from(chunk, 'utf-8').toString())
-        writableStream.write(chunk)
+        stream.emit('readable', chunk)
       })
     )
-    return outputPath
+    return undefined
   }
 
   public readFile(path: string): ReadStream | null {
@@ -36,6 +32,7 @@ export class BacenTreasurePaper {
   }
 
   public filter(treasure: RawTreasure): RawTreasure | null {
+    logger.debug({ method: '[FILTER]', type: treasure['Tipo Titulo'] })
     if (treasure['Tipo Titulo'] === this.name) {
       return treasure
     }
@@ -62,6 +59,6 @@ export class BacenTreasurePaper {
   }
 
   public persist(treasure: TreasurePaper): void {
-    logger.info(JSON.stringify(treasure))
+    logger.info({ method: '[PERSIST]', treasure })
   }
 }
