@@ -1,6 +1,5 @@
 import { Transform, Writable } from 'node:stream'
-
-import csvtojson from 'csvtojson'
+import { csvStream } from 'src/framework/libs/fast-csv'
 
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 
@@ -39,11 +38,6 @@ export async function getBrazilianTreasurePapers(): Promise<void> {
       cb(null)
     }
   })
-
   const stream = await paperHandler.download()
-  stream
-    .pipe(csvtojson({ delimiter: ';' }))
-    .pipe(filter)
-    .pipe(parse)
-    .pipe(persist)
+  stream.pipe(csvStream).pipe(filter).pipe(parse).pipe(persist)
 }
