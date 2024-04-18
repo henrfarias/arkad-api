@@ -1,45 +1,49 @@
 import { Transform, Writable } from 'node:stream'
-import { pipeline } from 'node:stream/promises'
 
 import csvtojson from 'csvtojson'
 
-import logger from 'src/common/logger'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 
-export async function getBrazilianTreasurePapersFromFile(
-  filePath: string
-): Promise<void> {
+export async function getBrazilianTreasurePapers(): Promise<void> {
   const paperHandler = new BacenTreasurePaper('Tesouro Selic')
-  const readStream = paperHandler.readFile(filePath)
-  logger.debug(`Reading file ${filePath}`)
-  if (readStream === null) {
-    throw new Error('File not found')
-  }
-  const transformer = new Transform({
+
+  const filter = new Transform({
     readableObjectMode: true,
     writableObjectMode: true,
-    transform: (chunk, _, callback) => {
+    transform: (chunk, _, cb) => {
       const data = JSON.parse(chunk)
       const treasure = paperHandler.filter(data)
       if (treasure) {
-        const formatted = paperHandler.parse(treasure)
-        return callback(null, JSON.stringify(formatted))
+        return cb(null, chunk)
       }
-      return callback()
+      return cb()
     }
   })
-  const writableStream = new Writable({
-    write: (chunk, _, callback) => {
-      Promise.resolve(paperHandler.persist(JSON.parse(chunk))).then(() => {
-        callback(null)
-      })
+
+  const parse = new Transform({
+    readableObjectMode: true,
+    writableObjectMode: true,
+    transform: (chunk, _, cb) => {
+      const treasure = JSON.parse(chunk)
+      if (treasure) {
+        const formatted = paperHandler.parse(treasure)
+        return cb(null, JSON.stringify(formatted))
+      }
+      return cb()
     }
   })
-  await pipeline(
-    readStream,
-    csvtojson({ delimiter: ';' }),
-    transformer,
-    writableStream
-  ).catch(logger.error.bind(logger))
-  return
+
+  const persist = new Writable({
+    write: async (chunk, _, cb) => {
+      paperHandler.persist(JSON.parse(chunk))
+      cb(null)
+    }
+  })
+
+  const stream = await paperHandler.download()
+  stream
+    .pipe(csvtojson({ delimiter: ';' }))
+    .pipe(filter)
+    .pipe(parse)
+    .pipe(persist)
 }

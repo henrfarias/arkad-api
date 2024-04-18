@@ -3,9 +3,6 @@ import {
   RawTreasure
 } from 'src/common/interfaces/treasure_paper'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
-import { getBrazilianTreasurePapersFromFile } from '../../../../src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
-import { dirname, join } from 'path'
-import logger from 'src/common/logger'
 
 describe('Script to download, filter, format and persist treasure paper registers as "Tesouro Selic"', () => {
   const sut = new BacenTreasurePaper('Tesouro Selic')
@@ -190,19 +187,6 @@ describe('Script to download, filter, format and persist treasure paper register
       }
       const result = sut.parse(treasure)
       expect(result).toStrictEqual(expected)
-    })
-  })
-
-  describe('all flow', () => {
-    test.only('should pass all flow call persist function for all treasures as passed through', async () => {
-      const { pathname: currentPath } = new URL(import.meta.url)
-      const cwd = dirname(currentPath)
-      const filePath = join(cwd, '..', '..', 'scripts', 'mocks', 'test.csv')
-      try {
-        await getBrazilianTreasurePapersFromFile(filePath)
-      } catch (err) {
-        logger.error(err)
-      }
     })
   })
 })

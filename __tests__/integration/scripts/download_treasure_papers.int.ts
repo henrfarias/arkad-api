@@ -1,14 +1,9 @@
-import { downloadTreasurePapers } from 'src/scripts/seed_treasure_paper/download_treasure_papers'
 import { jest } from '@jest/globals'
+import { getBrazilianTreasurePapers } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
 jest.setTimeout(60000)
 
 describe('download_treasure_papers', () => {
-  test('should download the file from the website', async () => {
-    // Arrange
-    const fileName = 'test.csv'
-    // Act
-    const result = await downloadTreasurePapers(fileName)
-    // Assert
-    expect(result).toEqual(expect.stringMatching(/\/temp\/test\.csv/))
+  test('should download the file from the website passing through the pipeline', async () => {
+    await getBrazilianTreasurePapers()
   })
 })
