@@ -1,10 +1,12 @@
+import {
+  Indexes,
+  RawTreasure,
+  TreasurePaper
+} from '@interfaces/entity/treasure_paper'
 import axios from 'axios'
 import { Readable } from 'node:stream'
-import {
-  TreasurePaper,
-  RawTreasure
-} from 'src/common/interfaces/treasure_paper'
-import logger from 'src/common/logger'
+
+import logger from '@common/logger'
 
 export class BacenTreasurePaper {
   constructor(readonly name: string) {
@@ -27,25 +29,24 @@ export class BacenTreasurePaper {
 
   public parse(treasure: RawTreasure): TreasurePaper {
     const formatDateRef = treasure['Data Base'].split('/').reverse().join('-')
-    const dateRef = new Date(`${formatDateRef}T03:00:00Z`)
+    const refDate = new Date(`${formatDateRef}T03:00:00Z`)
     const formatDueDate = treasure['Data Vencimento']
       .split('/')
       .reverse()
       .join('-')
-    const taxaCompra = parseFloat(
-      treasure['Taxa Compra Manha'].replace(',', '.')
-    )
+    const purchaseFee =
+      parseFloat(treasure['Taxa Compra Manha'].replace(',', '.')) / 100
     const puCompra = parseFloat(treasure['PU Compra Manha'].replace(',', '.'))
     const puVenda = parseFloat(treasure['PU Venda Manha'].replace(',', '.'))
     const dueDate = new Date(`${formatDueDate}T03:00:00Z`)
     return {
-      titulo: `${treasure['Tipo Titulo']} ${dueDate.getFullYear()}`,
-      data_ref: dateRef,
-      vencimento: dueDate,
-      indice: 'selic',
-      taxa_compra: taxaCompra / 100,
-      pu_compra: Math.ceil(puCompra * 100),
-      pu_venda: Math.ceil(puVenda * 100)
+      title: `${treasure['Tipo Titulo']} ${dueDate.getFullYear()}`,
+      refDate,
+      dueDate,
+      index: Indexes.SELIC,
+      purchaseFee: purchaseFee,
+      purchasePrice: Math.ceil(puCompra * 100),
+      salePrice: Math.ceil(puVenda * 100)
     }
   }
 

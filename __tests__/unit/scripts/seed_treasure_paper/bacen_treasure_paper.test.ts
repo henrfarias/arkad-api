@@ -1,10 +1,11 @@
+import {
+  Indexes,
+  RawTreasure,
+  TreasurePaper
+} from '@domain/interfaces/entity/treasure_paper'
 import { waitStream } from '__tests__/utils/wait_stream'
 import { createReadStream } from 'fs'
 import { dirname, join } from 'path'
-import {
-  TreasurePaper,
-  RawTreasure
-} from 'src/common/interfaces/treasure_paper'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 import { getBrazilianTreasurePapers } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
 import { describe, expect, test, vi } from 'vitest'
@@ -187,13 +188,13 @@ describe('Script to download, filter, format and persist treasure paper register
         'PU Base Manha': '14459,8'
       }
       const expected: TreasurePaper = {
-        titulo: 'Tesouro Selic 2029',
-        data_ref: new Date('2024-03-13T03:00:00Z'), // '13/03/2024'
-        vencimento: new Date('2029-03-01T03:00:00Z'), // '01/03/2029'
-        indice: 'selic',
-        taxa_compra: 0.0015,
-        pu_compra: 1447314,
-        pu_venda: 1445980
+        title: 'Tesouro Selic 2029',
+        refDate: new Date('2024-03-13T03:00:00Z'), // '13/03/2024'
+        dueDate: new Date('2029-03-01T03:00:00Z'), // '01/03/2029'
+        index: Indexes.SELIC,
+        purchaseFee: 0.0015,
+        purchasePrice: 1447314,
+        salePrice: 1445980
       }
       const result = sut.parse(treasure)
       expect(result).toStrictEqual(expected)

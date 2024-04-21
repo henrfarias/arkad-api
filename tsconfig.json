@@ -9,7 +9,13 @@
     "module": "es2020",                             /* Specify what module code is generated. */
     "moduleResolution": "Node",
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@common/*": ["src/common/*"],
+      "@domain/*": ["src/domain/*"],
+      "@interfaces/*": ["src/domain/interfaces/*"],
+      "@framework/*": ["src/framework/*"],
+      "@test/*": ["__tests__/*"]
+    },
     /* Emit */
     "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     "declarationMap": true,                           /* Create sourcemaps for d.ts files. */

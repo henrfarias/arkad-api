@@ -1,6 +1,6 @@
 import { Readable, Transform, Writable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
-import { csvStream } from 'src/framework/libs/fast-csv'
+import { csvStream } from '@framework/libs/fast-csv'
 
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 
