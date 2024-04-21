@@ -10,7 +10,7 @@
   "license": "MIT",
   "scripts": {
     "test": "vitest run __tests__/unit/*",
-    "test:watch": "vitest __tests__/unit/*", 
+    "test:watch": "vitest __tests__/unit/*",
     "test:int": "vitest run __tests__/integration/*",
     "prepare": "husky",
     "lint": "lint-staged --config .lintstagedrc.commit.json"
@@ -25,6 +25,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
+    "prisma": "^5.12.1",
     "ts-node": "^10.9.2",
     "tsc-files": "^1.1.4",
     "typescript": "^5.3.3"
