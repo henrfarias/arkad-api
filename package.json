@@ -38,5 +38,8 @@
     "fast-csv": "^5.0.1",
     "pino": "^8.19.0",
     "pino-pretty": "^11.0.0"
+  },
+  "prisma": {
+    "schema": "src/common/prisma/schema.prisma"
   }
 }

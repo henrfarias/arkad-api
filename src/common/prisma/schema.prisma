@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -59,8 +53,8 @@ model SavingsSimulation {
   result               Int                @map("resultado")
   yield                Float              @map("rendimento")
   createdAt            DateTime           @default(now()) @map("criado_em")
-  initialRate          Index              @relation(fields: [initialRateId], references: [id])
   treasureSimulation   TreasureSimulation @relation(fields: [treasureSimulationId], references: [id])
+  initialRate          Index              @relation(fields: [initialRateId], references: [id])
 
   @@map("simulacao_poupanca")
 }
@@ -68,7 +62,6 @@ model SavingsSimulation {
 model TreasureSimulation {
   id                 String              @id @default(uuid())
   treasurePaperId    String              @map("id_titulo_inicial")
-  initialPaper       TreasurePaper       @relation(fields: [treasurePaperId], references: [id])
   initialAmount      Int                 @map("valor_inicial")
   investmentAmount   Int?                @map("aporte")
   investmentQuantity Int?                @map("qtd_aportes")
@@ -83,6 +76,7 @@ model TreasureSimulation {
   ip                 String
   createdAt          DateTime            @default(now()) @map("criado_em")
   savingsSimulation  SavingsSimulation[]
+  initialPaper       TreasurePaper       @relation(fields: [treasurePaperId], references: [id])
 
   @@map("simulacao_tesouro")
 }
