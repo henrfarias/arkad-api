@@ -1,8 +1,13 @@
+import { waitStream } from '__tests__/utils/wait_stream'
+import { createReadStream } from 'fs'
+import { dirname, join } from 'path'
 import {
   TreasurePaper,
   RawTreasure
 } from 'src/common/interfaces/treasure_paper'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
+import { getBrazilianTreasurePapers } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('Script to download, filter, format and persist treasure paper registers as "Tesouro Selic"', () => {
   const sut = new BacenTreasurePaper('Tesouro Selic')
@@ -118,6 +123,11 @@ describe('Script to download, filter, format and persist treasure paper register
       'PU Base Manha': '1289.51'
     }
   ]
+  const { pathname } = new URL(import.meta.url)
+  const __dirname = dirname(pathname)
+  const mockStream = createReadStream(
+    join(__dirname, '..', 'mocks', 'treasure_sample.csv')
+  )
   describe('readStream -> FILTER -> format -> persist', () => {
     test('should return a list of "Tesouro Selic" treasure papers', () => {
       const treasures: RawTreasure[] = readStream
@@ -172,9 +182,9 @@ describe('Script to download, filter, format and persist treasure paper register
         'Data Base': '13/03/2024',
         'Taxa Compra Manha': '0.15',
         'Taxa Venda Manha': '0.17',
-        'PU Compra Manha': '14473.14',
-        'PU Venda Manha': '14459.8',
-        'PU Base Manha': '14459.8'
+        'PU Compra Manha': '14473,14',
+        'PU Venda Manha': '14459,8',
+        'PU Base Manha': '14459,8'
       }
       const expected: TreasurePaper = {
         titulo: 'Tesouro Selic 2029',
@@ -187,6 +197,25 @@ describe('Script to download, filter, format and persist treasure paper register
       }
       const result = sut.parse(treasure)
       expect(result).toStrictEqual(expected)
+    })
+  })
+
+  describe('all flow', () => {
+    test('should return a list of "Tesouro Selic" treasure papers', async () => {
+      const treasureHandler = new BacenTreasurePaper('Tesouro Selic')
+      const filterSpy = vi.spyOn(treasureHandler, 'filter')
+      const parseSpy = vi.spyOn(treasureHandler, 'parse')
+      const persistSpy = vi.spyOn(treasureHandler, 'persist')
+      const result = await getBrazilianTreasurePapers(
+        treasureHandler,
+        mockStream
+      )
+      await waitStream(25)
+      expect(result).toBe(undefined)
+      expect(filterSpy).toHaveBeenCalledTimes(100)
+      expect(parseSpy).toHaveBeenCalledTimes(13)
+      expect(persistSpy).toHaveBeenCalledTimes(13)
+      expect.assertions(4)
     })
   })
 })
