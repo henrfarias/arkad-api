@@ -35,12 +35,8 @@ export class BacenTreasurePaper {
     const taxaCompra = parseFloat(
       treasure['Taxa Compra Manha'].replace(',', '.')
     )
-    const puCompra = Math.ceil(
-      parseFloat(treasure['PU Compra Manha'].replace(',', '.'))
-    )
-    const puVenda = Math.ceil(
-      parseFloat(treasure['PU Venda Manha'].replace(',', '.'))
-    )
+    const puCompra = parseFloat(treasure['PU Compra Manha'].replace(',', '.'))
+    const puVenda = parseFloat(treasure['PU Venda Manha'].replace(',', '.'))
     const dueDate = new Date(`${formatDueDate}T03:00:00Z`)
     return {
       titulo: `${treasure['Tipo Titulo']} ${dueDate.getFullYear()}`,
@@ -48,8 +44,8 @@ export class BacenTreasurePaper {
       vencimento: dueDate,
       indice: 'selic',
       taxa_compra: taxaCompra / 100,
-      pu_compra: puCompra * 100,
-      pu_venda: puVenda * 100
+      pu_compra: Math.ceil(puCompra * 100),
+      pu_venda: Math.ceil(puVenda * 100)
     }
   }
 
