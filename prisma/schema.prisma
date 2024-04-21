@@ -12,3 +12,92 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model TreasurePaper {
+  id                 String               @id @default(uuid())
+  title              String               @map("titulo") @db.VarChar(100)
+  refDate            DateTime             @map("data_ref")
+  dueDate            DateTime             @map("vencimento")
+  index              Indexes              @map("indice")
+  purchaseFee        Float                @map("taxa_compra")
+  purchasePrice      Int                  @map("pu_compra")
+  salePrice          Int                  @map("pu_venda")
+  treasureSimulation TreasureSimulation[]
+
+  @@map("titulo_tesouro")
+}
+
+model Index {
+  id                String              @id @default(uuid())
+  index             Indexes             @map("indice")
+  rate              Float               @map("taxa")
+  refDate           DateTime            @map("data_ref")
+  frequency         Frequency           @map("frequencia")
+  savingsSimulation SavingsSimulation[]
+
+  @@map("indices")
+}
+
+model ProjectiveRate {
+  id         String  @id @default(uuid())
+  annualRate Float   @map("taxa_anual")
+  index      Indexes @map("indice")
+  refYear    Int     @map("ano_ref")
+
+  @@map("taxa_projetiva")
+}
+
+model SavingsSimulation {
+  id                   String             @id @default(uuid())
+  initialRateId        String             @map("id_taxa_inicial")
+  treasureSimulationId String             @map("id_simulacao_tesouro")
+  initialAmount        Int                @map("valor_inicial")
+  investmentAmount     Int?               @map("aporte")
+  investmentQuantity   Int?               @map("qtd_aportes")
+  investmentType       InvestmentType     @map("tipo_aporte")
+  assetDevelopment     Json               @map("evolucao_patrimonial")
+  result               Int                @map("resultado")
+  yield                Float              @map("rendimento")
+  createdAt            DateTime           @default(now()) @map("criado_em")
+  initialRate          Index              @relation(fields: [initialRateId], references: [id])
+  treasureSimulation   TreasureSimulation @relation(fields: [treasureSimulationId], references: [id])
+
+  @@map("simulacao_poupanca")
+}
+
+model TreasureSimulation {
+  id                 String              @id @default(uuid())
+  treasurePaperId    String              @map("id_titulo_inicial")
+  initialPaper       TreasurePaper       @relation(fields: [treasurePaperId], references: [id])
+  initialAmount      Int                 @map("valor_inicial")
+  investmentAmount   Int?                @map("aporte")
+  investmentQuantity Int?                @map("qtd_aportes")
+  investmentType     InvestmentType      @map("tipo_aporte")
+  assetDevelopment   Json                @map("evolucao_patrimonial")
+  grossResult        Int                 @map("resultado_bruto")
+  totalIncomeTax     Int                 @map("ir_retido_total")
+  totalB3Fee         Int                 @map("taxa_b3_total")
+  grossYield         Float               @map("rendimento_bruto")
+  netYield           Float               @map("rendimento_liquido")
+  refDate            DateTime            @map("data_ref")
+  ip                 String
+  createdAt          DateTime            @default(now()) @map("criado_em")
+  savingsSimulation  SavingsSimulation[]
+
+  @@map("simulacao_tesouro")
+}
+
+enum Indexes {
+  selic
+  poup
+}
+
+enum Frequency {
+  diaria
+  mensal
+  anual
+}
+
+enum InvestmentType {
+  mensal
+}
