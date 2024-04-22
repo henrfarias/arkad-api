@@ -18,7 +18,7 @@ export interface TreasurePaperEntity {
   title: string
   refDate: Date
   dueDate: Date
-  index: Indexes
+  index: `${Indexes}`
   purchaseFee: number
   purchasePrice: number
   salePrice: number
