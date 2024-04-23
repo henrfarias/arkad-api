@@ -9,7 +9,7 @@ import { waitStream } from '__tests__/utils/wait_stream'
 import { createReadStream } from 'fs'
 import { dirname, join } from 'path'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
-import { GetBrazilianTreasurePapers } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
+import { GetTreasurePapersFromStream } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
 import { describe, expect, test, vi } from 'vitest'
 
 describe('Script to download, filter, format and persist treasure paper registers as "Tesouro Selic"', () => {
@@ -225,7 +225,7 @@ describe('Script to download, filter, format and persist treasure paper register
       const filterSpy = vi.spyOn(treasureHandler, 'filter')
       const parseSpy = vi.spyOn(treasureHandler, 'parse')
       const persistSpy = vi.spyOn(treasureHandler, 'persist')
-      const sut = new GetBrazilianTreasurePapers(mockStream, treasureHandler)
+      const sut = new GetTreasurePapersFromStream(mockStream, treasureHandler)
       const result = await sut.execute()
       await waitStream(25)
       expect(result).toBe(undefined)

@@ -4,7 +4,7 @@ import { csvStream } from '@framework/libs/fast-csv'
 
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 
-export class GetBrazilianTreasurePapers {
+export class GetTreasurePapersFromStream {
   constructor(
     public stream: Readable,
     private handler: BacenTreasurePaper
