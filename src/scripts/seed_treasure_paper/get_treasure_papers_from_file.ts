@@ -4,16 +4,29 @@ import { csvStream } from '@framework/libs/fast-csv'
 
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 
-export async function getBrazilianTreasurePapers(
-  handler: BacenTreasurePaper,
-  stream: Readable
-): Promise<void> {
-  const filter = new Transform({
+export class GetBrazilianTreasurePapers {
+  constructor(
+    public stream: Readable,
+    private handler: BacenTreasurePaper
+  ) {}
+
+  async execute(): Promise<void> {
+    await pipeline(
+      this.stream,
+      csvStream,
+      this.filter,
+      this.parse,
+      this.persist
+    )
+    return
+  }
+
+  private filter = new Transform({
     readableObjectMode: true,
     writableObjectMode: true,
     transform: (chunk, _, cb) => {
       const data = JSON.parse(chunk)
-      const treasure = handler.filter(data)
+      const treasure = this.handler.filter(data)
       if (treasure) {
         return cb(null, chunk)
       }
@@ -21,25 +34,23 @@ export async function getBrazilianTreasurePapers(
     }
   })
 
-  const parse = new Transform({
+  private parse = new Transform({
     readableObjectMode: true,
     writableObjectMode: true,
     transform: (chunk, _, cb) => {
       const treasure = JSON.parse(chunk)
       if (treasure) {
-        const formatted = handler.parse(treasure)
+        const formatted = this.handler.parse(treasure)
         return cb(null, JSON.stringify(formatted))
       }
       return cb()
     }
   })
 
-  const persist = new Writable({
+  private persist = new Writable({
     write: async (chunk, _, cb) => {
-      handler.persist(JSON.parse(chunk))
+      this.handler.persist(JSON.parse(chunk))
       cb(null)
     }
   })
-  await pipeline(stream, csvStream, filter, parse, persist)
-  return
 }

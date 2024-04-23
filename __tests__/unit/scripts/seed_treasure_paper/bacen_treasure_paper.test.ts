@@ -3,15 +3,19 @@ import {
   RawTreasure,
   TreasurePaper
 } from '@domain/interfaces/entity/treasure_paper'
+import { TreasurePaperRepository } from '@domain/interfaces/repositories/treasure_paper.repository'
+import { MemoryTreasurePaperRepository } from '@test/utils/mocks/repositories/memory_treasure_paper.repository'
 import { waitStream } from '__tests__/utils/wait_stream'
 import { createReadStream } from 'fs'
 import { dirname, join } from 'path'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
-import { getBrazilianTreasurePapers } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
+import { GetBrazilianTreasurePapers } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
 import { describe, expect, test, vi } from 'vitest'
 
 describe('Script to download, filter, format and persist treasure paper registers as "Tesouro Selic"', () => {
-  const sut = new BacenTreasurePaper('Tesouro Selic')
+  const repository: TreasurePaperRepository =
+    new MemoryTreasurePaperRepository()
+  const sut = new BacenTreasurePaper('Tesouro Selic', repository)
   const readStream: RawTreasure[] = [
     {
       'Tipo Titulo': 'Tesouro Prefixado com Juros Semestrais',
@@ -211,15 +215,18 @@ describe('Script to download, filter, format and persist treasure paper register
   })
 
   describe('all flow', () => {
-    test('should return a list of "Tesouro Selic" treasure papers', async () => {
-      const treasureHandler = new BacenTreasurePaper('Tesouro Selic')
+    test('should pass data from csv through the stream filtering each row (database empty)', async () => {
+      const repository: TreasurePaperRepository =
+        new MemoryTreasurePaperRepository()
+      const treasureHandler = new BacenTreasurePaper(
+        'Tesouro Selic',
+        repository
+      )
       const filterSpy = vi.spyOn(treasureHandler, 'filter')
       const parseSpy = vi.spyOn(treasureHandler, 'parse')
       const persistSpy = vi.spyOn(treasureHandler, 'persist')
-      const result = await getBrazilianTreasurePapers(
-        treasureHandler,
-        mockStream
-      )
+      const sut = new GetBrazilianTreasurePapers(mockStream, treasureHandler)
+      const result = await sut.execute()
       await waitStream(25)
       expect(result).toBe(undefined)
       expect(filterSpy).toHaveBeenCalledTimes(100)

@@ -1,15 +1,17 @@
+import axios from 'axios'
 import {
   Indexes,
   RawTreasure,
   TreasurePaper
 } from '@interfaces/entity/treasure_paper'
-import axios from 'axios'
 import { Readable } from 'node:stream'
-
-import logger from '@common/logger'
+import { TreasurePaperRepository } from '@domain/interfaces/repositories/treasure_paper.repository'
 
 export class BacenTreasurePaper {
-  constructor(readonly name: string) {
+  constructor(
+    readonly name: string,
+    private treasurePaperRepository: TreasurePaperRepository
+  ) {
     this.name = name
   }
 
@@ -51,6 +53,7 @@ export class BacenTreasurePaper {
   }
 
   public async persist(treasure: TreasurePaper): Promise<void> {
-    logger.debug(JSON.stringify(treasure))
+    this.treasurePaperRepository.save(treasure)
+    return
   }
 }
