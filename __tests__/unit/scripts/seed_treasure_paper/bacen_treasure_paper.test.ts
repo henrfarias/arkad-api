@@ -127,7 +127,16 @@ describe('Script to download, filter, format and persist treasure paper register
   const { pathname } = new URL(import.meta.url)
   const __dirname = dirname(pathname)
   const mockStream = createReadStream(
-    join(__dirname, '..', 'mocks', 'treasure_sample.csv')
+    join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'utils',
+      'mocks',
+      'csv',
+      'treasure_sample.csv'
+    )
   )
   describe('readStream -> FILTER -> format -> persist', () => {
     test('should return a list of "Tesouro Selic" treasure papers', () => {
