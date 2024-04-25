@@ -1,3 +1,4 @@
+import { csvStream } from '@framework/libs/fast-csv'
 import {
   Indexes,
   RawTreasure,
@@ -9,13 +10,10 @@ import { waitStream } from '__tests__/utils/wait_stream'
 import { createReadStream } from 'fs'
 import { dirname, join } from 'path'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
-import { GetTreasurePapersFromStream } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_file'
-import { describe, expect, test, vi } from 'vitest'
+import { GetTreasurePapersFromStream } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_stream'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 describe('Script to download, filter, format and persist treasure paper registers as "Tesouro Selic"', () => {
-  const repository: TreasurePaperRepository =
-    new MemoryTreasurePaperRepository()
-  const sut = new BacenTreasurePaper('Tesouro Selic', repository)
   const readStream: RawTreasure[] = [
     {
       'Tipo Titulo': 'Tesouro Prefixado com Juros Semestrais',
@@ -130,20 +128,15 @@ describe('Script to download, filter, format and persist treasure paper register
   ]
   const { pathname } = new URL(import.meta.url)
   const __dirname = dirname(pathname)
-  const mockStream = createReadStream(
-    join(
-      __dirname,
-      '..',
-      '..',
-      '..',
-      'utils',
-      'mocks',
-      'csv',
-      'treasure_sample.csv'
-    )
-  )
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
   describe('readStream -> FILTER -> format -> persist', () => {
-    test('should return a list of "Tesouro Selic" treasure papers', () => {
+    test('should return a list of "Tesouro Selic" treasure papers', async () => {
+      const repository: TreasurePaperRepository =
+        new MemoryTreasurePaperRepository()
+      const sut = new BacenTreasurePaper('Tesouro Selic', repository)
       const treasures: RawTreasure[] = readStream
       const expected: RawTreasure[] = [
         {
@@ -178,18 +171,21 @@ describe('Script to download, filter, format and persist treasure paper register
         }
       ]
       const result: RawTreasure[] = []
-      treasures.forEach((treasure) => {
-        if (sut.filter(treasure)) {
+      for (const treasure of treasures) {
+        if (await sut.filter(treasure)) {
           expect(treasure['Tipo Titulo']).toBe('Tesouro Selic')
           result.push(treasure)
         }
-      })
+      }
       expect(result).toStrictEqual(expected)
       expect.assertions(4)
     })
   })
   describe('readStream -> filter -> FORMAT -> persist', () => {
     test('should format the treasure paper to a new format', () => {
+      const repository: TreasurePaperRepository =
+        new MemoryTreasurePaperRepository()
+      const sut = new BacenTreasurePaper('Tesouro Selic', repository)
       const treasure: RawTreasure = {
         'Tipo Titulo': 'Tesouro Selic',
         'Data Vencimento': '01/03/2029',
@@ -215,9 +211,29 @@ describe('Script to download, filter, format and persist treasure paper register
   })
 
   describe('all flow', () => {
-    test('should pass data from csv through the stream filtering each row (database empty)', async () => {
-      const repository: TreasurePaperRepository =
-        new MemoryTreasurePaperRepository()
+    test('should pass data from csv through the stream filtering each row', async () => {
+      const mockStream = createReadStream(
+        join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'utils',
+          'mocks',
+          'csv',
+          'treasure_sample.csv'
+        )
+      )
+      const repository = new MemoryTreasurePaperRepository()
+      repository.save({
+        title: 'Tesouro Selic 2006',
+        index: Indexes.SELIC,
+        dueDate: new Date('2006-01-18T03:00:00Z'),
+        refDate: new Date('2005-10-31T03:00:00Z'),
+        purchaseFee: 0.0002,
+        purchasePrice: 249757,
+        salePrice: 249752
+      })
       const treasureHandler = new BacenTreasurePaper(
         'Tesouro Selic',
         repository
@@ -225,13 +241,19 @@ describe('Script to download, filter, format and persist treasure paper register
       const filterSpy = vi.spyOn(treasureHandler, 'filter')
       const parseSpy = vi.spyOn(treasureHandler, 'parse')
       const persistSpy = vi.spyOn(treasureHandler, 'persist')
-      const sut = new GetTreasurePapersFromStream(mockStream, treasureHandler)
+      const sut = new GetTreasurePapersFromStream(
+        mockStream,
+        csvStream,
+        treasureHandler
+      )
       const result = await sut.execute()
       await waitStream(25)
+      sut.done()
       expect(result).toBe(undefined)
       expect(filterSpy).toHaveBeenCalledTimes(100)
-      expect(parseSpy).toHaveBeenCalledTimes(13)
-      expect(persistSpy).toHaveBeenCalledTimes(13)
+      // 13 "Tesouro Selic registers"
+      expect(parseSpy).toHaveBeenCalledTimes(9)
+      expect(persistSpy).toHaveBeenCalledTimes(9)
       expect.assertions(4)
     })
   })
