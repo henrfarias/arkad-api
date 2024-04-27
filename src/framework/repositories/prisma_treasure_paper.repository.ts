@@ -14,7 +14,7 @@ export class PrismaTreasurePaperRepository implements TreasurePaperRepository {
   }
 
   async save(treasure: TreasurePaperEntity): Promise<void> {
-    this.prisma.treasurePaper.create({ data: treasure })
+    await this.prisma.treasurePaper.create({ data: treasure })
     return
   }
 
