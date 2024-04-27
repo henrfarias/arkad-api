@@ -1,12 +1,16 @@
+import logger from '@common/logger'
+import { Controller } from '@domain/controller'
 import { PassThrough, Readable, Transform, Writable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
-export class GetTreasurePapersFromStream {
+export class GetTreasurePapersFromStream extends Controller {
   constructor(
     public stream: Readable,
     private csvStream: PassThrough,
     private handler: BacenTreasurePaper
-  ) {}
+  ) {
+    super()
+  }
 
   async execute(): Promise<void> {
     await pipeline(
@@ -15,7 +19,7 @@ export class GetTreasurePapersFromStream {
       this.filter,
       this.parse,
       this.persist
-    ).catch((error) => console.log(error))
+    ).catch((error) => logger.error(error))
     return
   }
 
