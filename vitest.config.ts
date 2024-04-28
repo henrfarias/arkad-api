@@ -12,7 +12,7 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     bail: 0,
-    exclude: ['node_modules'],
+    exclude: ['node_modules', 'data', 'dist'],
     restoreMocks: true
   }
 })
