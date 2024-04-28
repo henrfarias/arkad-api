@@ -20,5 +20,3 @@ export async function seedTreasure(): Promise<void> {
   logger.debug('Finishing seed...')
   exit(0)
 }
-
-seedTreasure()
