@@ -5,7 +5,7 @@ import { exit } from 'process'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 import { GetTreasurePapersFromStream } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_stream'
 
-export async function seedTreasure(): Promise<void> {
+export async function seedTreasurePaper(): Promise<void> {
   logger.debug('Starting seed...')
   const repository = new PrismaTreasurePaperRepository()
   const handler = new BacenTreasurePaper('Tesouro Selic', repository)
