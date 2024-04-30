@@ -7,8 +7,11 @@ import {
   Indexes,
   RawSelic
 } from '@domain/interfaces/entity'
+import { IndexRepository } from '@domain/interfaces/repositories/index.repository'
 
 export class BacenSelicIndex {
+  constructor(private repository: IndexRepository) {}
+
   public async download(): Promise<Readable> {
     logger.debug('download starting...')
     const endpoint =
@@ -27,5 +30,10 @@ export class BacenSelicIndex {
       refDate,
       frequency
     }
+  }
+
+  public async persist(index: IndexEntity): Promise<void> {
+    await this.repository.save(index)
+    return
   }
 }
