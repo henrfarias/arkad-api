@@ -1,12 +1,9 @@
 import axios from 'axios'
-import {
-  Indexes,
-  RawTreasure,
-  TreasurePaper
-} from '@interfaces/entity/treasure_paper'
+import { RawTreasure, TreasurePaper } from '@interfaces/entity/treasure_paper'
 import { Readable } from 'node:stream'
 import { TreasurePaperRepository } from '@domain/interfaces/repositories/treasure_paper.repository'
 import logger from '@common/logger'
+import { Indexes } from '@domain/interfaces/entity'
 
 export class BacenTreasurePaper {
   last?: TreasurePaper | null
