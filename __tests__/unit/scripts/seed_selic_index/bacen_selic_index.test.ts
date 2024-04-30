@@ -1,8 +1,16 @@
 import { Frequency, IndexEntity, RawSelic } from '@domain/interfaces/entity'
+import { MemoryIndexRepository } from '@test/utils/mocks/repositories/memory_index.repository'
+import { createReadStream } from 'fs'
+import { dirname, join } from 'path'
 import { BacenSelicIndex } from 'src/scripts/seed_selic_index/bacen_selic_index'
-import { describe, expect, test } from 'vitest'
+import { GetSelicRatesFromStream } from 'src/scripts/seed_selic_index/get_selic_rates_from_stream'
+import { describe, expect, test, vi } from 'vitest'
+import { jsonStream } from '@framework/libs/stream-json'
 
 describe('Script to download, format and persist selic index registers as "Bacen Selic Index"', () => {
+  const { pathname } = new URL(import.meta.url)
+  const __dirname = dirname(pathname)
+
   const selicRates: {
     input: RawSelic
     expected: Pick<IndexEntity, 'rate' | 'refDate'>
@@ -39,7 +47,8 @@ describe('Script to download, format and persist selic index registers as "Bacen
   test.each(selicRates)(
     'should format $input.data as $expected.refDate and $input.valor as $expected.rate',
     ({ input, expected }) => {
-      const sut = new BacenSelicIndex()
+      const repository = new MemoryIndexRepository()
+      const sut = new BacenSelicIndex(repository)
       const result = sut.format(input, Frequency.DAILY)
       expect(result).toStrictEqual({
         index: 'selic',
@@ -49,4 +58,30 @@ describe('Script to download, format and persist selic index registers as "Bacen
       })
     }
   )
+
+  test('should pass through all flow', async () => {
+    const mockStream = createReadStream(
+      join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'utils',
+        'mocks',
+        'json',
+        'selic_daily.json'
+      )
+    )
+    const indexRepository = new MemoryIndexRepository()
+    const selicHandler = new BacenSelicIndex(indexRepository)
+    const sut = new GetSelicRatesFromStream(
+      mockStream,
+      jsonStream,
+      selicHandler
+    )
+    const persistSpy = vi.spyOn(selicHandler, 'persist')
+    await sut.execute()
+    sut.done()
+    expect(persistSpy).toBeCalledTimes(100)
+  })
 })

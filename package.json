@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/node": "^20.11.20",
+    "@types/stream-json": "^1.7.7",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.57.0",
@@ -39,7 +40,8 @@
     "axios": "^1.6.8",
     "fast-csv": "^5.0.1",
     "pino": "^8.19.0",
-    "pino-pretty": "^11.0.0"
+    "pino-pretty": "^11.0.0",
+    "stream-json": "^1.8.0"
   },
   "prisma": {
     "schema": "src/common/prisma/schema.prisma"
