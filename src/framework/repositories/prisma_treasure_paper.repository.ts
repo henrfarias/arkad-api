@@ -1,5 +1,5 @@
+import { Indexes } from '@domain/interfaces/entity'
 import {
-  Indexes,
   TreasurePaper,
   TreasurePaperEntity
 } from '@domain/interfaces/entity/treasure_paper'

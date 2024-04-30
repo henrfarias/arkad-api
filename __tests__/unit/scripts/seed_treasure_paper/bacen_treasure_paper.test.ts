@@ -1,6 +1,5 @@
 import { csvStream } from '@framework/libs/fast-csv'
 import {
-  Indexes,
   RawTreasure,
   TreasurePaper
 } from '@domain/interfaces/entity/treasure_paper'
@@ -12,6 +11,7 @@ import { dirname, join } from 'path'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 import { GetTreasurePapersFromStream } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_stream'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { Indexes } from '@domain/interfaces/entity'
 
 describe('Script to download, filter, format and persist treasure paper registers as "Tesouro Selic"', () => {
   const readStream: RawTreasure[] = [

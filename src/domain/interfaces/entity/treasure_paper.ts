@@ -1,3 +1,5 @@
+import { Indexes } from '.'
+
 export interface RawTreasure {
   'Tipo Titulo': string
   'Data Vencimento': string
@@ -7,11 +9,6 @@ export interface RawTreasure {
   'PU Compra Manha': string
   'PU Venda Manha': string
   'PU Base Manha': string
-}
-
-export enum Indexes {
-  SELIC = 'selic',
-  POUP = 'poup'
 }
 
 export interface TreasurePaperEntity {

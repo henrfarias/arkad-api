@@ -1,6 +1,6 @@
+import { Indexes } from '@domain/interfaces/entity'
 import {
   TreasurePaperEntity,
-  Indexes,
   TreasurePaper
 } from '@domain/interfaces/entity/treasure_paper'
 import { TreasurePaperRepository } from '@domain/interfaces/repositories/treasure_paper.repository'
