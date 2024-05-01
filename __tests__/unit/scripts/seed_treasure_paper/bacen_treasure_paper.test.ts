@@ -12,6 +12,7 @@ import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasu
 import { GetTreasurePapersFromStream } from 'src/scripts/seed_treasure_paper/get_treasure_papers_from_stream'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { Indexes } from '@domain/interfaces/entity'
+import axios from 'axios'
 
 describe('Script to download, filter, format and persist treasure paper registers as "Tesouro Selic"', () => {
   const readStream: RawTreasure[] = [
@@ -132,7 +133,34 @@ describe('Script to download, filter, format and persist treasure paper register
   beforeEach(() => {
     vi.clearAllMocks()
   })
-  describe('readStream -> FILTER -> format -> persist', () => {
+
+  describe('DOWNLOAD -> filter -> format -> persist', () => {
+    test('should do download of treasure paper csv', async () => {
+      const endpoint =
+        'https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/PrecoTaxaTesouroDireto.csv'
+      const mockStream = createReadStream(
+        join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'utils',
+          'mocks',
+          'csv',
+          'treasure_sample.csv'
+        )
+      )
+      const repository = new MemoryTreasurePaperRepository()
+      const sut = new BacenTreasurePaper('Tesouro Direto', repository)
+      const getSpy = vi.spyOn(axios, 'get')
+      getSpy.mockResolvedValue({ data: mockStream })
+      await sut.download()
+      expect(getSpy).toHaveBeenCalledWith(endpoint, {
+        responseType: 'stream'
+      })
+    })
+  })
+  describe('download -> FILTER -> format -> persist', () => {
     test('should return a list of "Tesouro Selic" treasure papers', async () => {
       const repository: TreasurePaperRepository =
         new MemoryTreasurePaperRepository()
@@ -181,7 +209,7 @@ describe('Script to download, filter, format and persist treasure paper register
       expect.assertions(4)
     })
   })
-  describe('readStream -> filter -> FORMAT -> persist', () => {
+  describe('download -> filter -> FORMAT -> persist', () => {
     test('should format the treasure paper to a new format', () => {
       const repository: TreasurePaperRepository =
         new MemoryTreasurePaperRepository()
