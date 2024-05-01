@@ -15,7 +15,7 @@ export class BacenSelicIndex {
   public async download(): Promise<Readable> {
     logger.debug('download starting...')
     const endpoint =
-      'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados/ultimos/500?formato=json'
+      'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=31/12/2004&dataFinal=01/05/2024'
     const readable = await axios.get(endpoint, { responseType: 'stream' })
     return readable.data
   }
