@@ -8,21 +8,38 @@ import {
   RawSelic
 } from '@domain/interfaces/entity'
 import { IndexRepository } from '@domain/interfaces/repositories/index.repository'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
 export class BacenSelicIndex {
-  constructor(private repository: IndexRepository) {}
+  range: { initialDate: string; finalDate: string }
+  constructor(private repository: IndexRepository) {
+    dayjs.extend(utc)
+    dayjs.extend(timezone)
+    dayjs.tz.setDefault('America/Sao_Paulo')
+    this.range = {
+      initialDate: this.dateToString(new Date('2004-12-31T03:00')),
+      finalDate: this.dateToString(new Date())
+    }
+  }
 
   public async download(): Promise<Readable> {
+    const lastIndex = await this.repository.getLast(Indexes.SELIC)
+    if (lastIndex) {
+      this.range.initialDate = this.dateToString(
+        dayjs(lastIndex.refDate).add(1, 'day')
+      )
+    }
     logger.debug('download starting...')
-    const endpoint =
-      'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=31/12/2004&dataFinal=01/05/2024'
+    const endpoint = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=${this.range.initialDate}&dataFinal=${this.range.finalDate}`
     const readable = await axios.get(endpoint, { responseType: 'stream' })
     return readable.data
   }
 
   public format(rawSelic: RawSelic, frequency: Frequency): IndexEntity {
     const [day, month, year] = rawSelic.data.split('/')
-    const refDate = new Date(`${year}-${month}-${day}T00:00:00Z`)
+    const refDate = dayjs(`${year}-${month}-${day}`).toDate()
     const rate = parseFloat(rawSelic.valor) / 100
     return {
       index: Indexes.SELIC,
@@ -35,5 +52,9 @@ export class BacenSelicIndex {
   public async persist(index: IndexEntity): Promise<void> {
     await this.repository.save(index)
     return
+  }
+
+  private dateToString(date: dayjs.ConfigType): string {
+    return dayjs(date).format('DD/MM/YYYY')
   }
 }
