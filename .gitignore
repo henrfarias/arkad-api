@@ -5,3 +5,4 @@ data
 !.env.example
 .tool-versions
 .vscode
+coverage

@@ -41,11 +41,8 @@ export class GetTreasurePapersFromStream extends Controller {
     writableObjectMode: true,
     transform: (chunk, _, cb) => {
       const treasure = JSON.parse(chunk)
-      if (treasure) {
-        const formatted = this.handler.parse(treasure)
-        return cb(null, JSON.stringify(formatted))
-      }
-      return cb()
+      const formatted = this.handler.parse(treasure)
+      return cb(null, JSON.stringify(formatted))
     }
   })
 

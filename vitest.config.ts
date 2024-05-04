@@ -13,6 +13,9 @@ export default defineConfig({
     clearMocks: true,
     bail: 0,
     exclude: ['node_modules', 'data', 'dist'],
-    restoreMocks: true
+    restoreMocks: true,
+    coverage: {
+      exclude: ['src/domain/interfaces']
+    }
   }
 })

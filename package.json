@@ -11,6 +11,7 @@
   "scripts": {
     "test": "vitest run __tests__/unit/*",
     "test:watch": "vitest __tests__/unit/*",
+    "coverage": "yarn test --coverage",
     "test:int": "vitest run __tests__/integration/*",
     "prepare": "husky",
     "lint": "lint-staged --config .lintstagedrc.commit.json",
@@ -22,6 +23,7 @@
     "@types/stream-json": "^1.7.7",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
+    "@vitest/coverage-v8": "^1.5.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.0.11",
@@ -38,6 +40,7 @@
   "dependencies": {
     "@prisma/client": "5.12.1",
     "axios": "^1.6.8",
+    "dayjs": "^1.11.11",
     "fast-csv": "^5.0.1",
     "pino": "^8.19.0",
     "pino-pretty": "^11.0.0",
