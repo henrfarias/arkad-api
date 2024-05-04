@@ -6,12 +6,14 @@ import { jsonStream } from '@framework/libs/stream-json'
 import { exit } from 'process'
 
 export async function seedSelicIndex(): Promise<void> {
-  logger.debug('Starting seed...')
+  logger.info('Starting seed...')
   const repository = new PrismaIndexRepository()
   const handler = new BacenSelicIndex(repository)
   const stream = await handler.download()
   const getIndexes = new GetSelicRatesFromStream(stream, jsonStream, handler)
   await getIndexes.execute()
-  logger.debug('Finishing seed...')
+  logger.info('Finishing seed...')
   exit(0)
 }
+
+seedSelicIndex()

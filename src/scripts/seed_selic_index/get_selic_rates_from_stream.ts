@@ -6,6 +6,7 @@ import logger from '@common/logger'
 import { Frequency, RawSelic } from '@domain/interfaces/entity'
 
 export class GetSelicRatesFromStream extends Controller {
+  count = 0
   constructor(
     public stream: Readable,
     private jsonStream: Duplex,
@@ -15,12 +16,9 @@ export class GetSelicRatesFromStream extends Controller {
   }
 
   async execute(): Promise<void> {
-    await pipeline(
-      this.stream,
-      this.jsonStream,
-      this.format,
-      this.persist
-    ).catch((error) => logger.error(error))
+    await pipeline(this.stream, this.jsonStream, this.format, this.persist)
+      .finally(() => logger.info(`New selic rates: ${this.count}`))
+      .catch((error) => logger.error(error))
     return
   }
 
@@ -36,6 +34,7 @@ export class GetSelicRatesFromStream extends Controller {
 
   private persist = new Writable({
     write: async (chunk, _, cb) => {
+      this.count++
       await this.handler.persist(JSON.parse(chunk))
       cb(null)
     }

@@ -4,6 +4,7 @@ import { PassThrough, Readable, Transform, Writable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { BacenTreasurePaper } from 'src/scripts/seed_treasure_paper/bacen_treasure_paper'
 export class GetTreasurePapersFromStream extends Controller {
+  count = 0
   constructor(
     public stream: Readable,
     private csvStream: PassThrough,
@@ -19,7 +20,9 @@ export class GetTreasurePapersFromStream extends Controller {
       this.filter,
       this.parse,
       this.persist
-    ).catch((error) => logger.error(error))
+    )
+      .finally(() => logger.info(`New papers: ${this.count}`))
+      .catch((error) => logger.error(error))
     return
   }
 
@@ -48,6 +51,7 @@ export class GetTreasurePapersFromStream extends Controller {
 
   private persist = new Writable({
     write: async (chunk, _, cb) => {
+      this.count++
       this.handler.persist(JSON.parse(chunk))
       cb(null)
     }
