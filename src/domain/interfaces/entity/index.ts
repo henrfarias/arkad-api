@@ -9,16 +9,16 @@ export enum Indexes {
 }
 
 export enum Frequency {
-  DAILY = 'daily',
-  MONTHLY = 'monthly',
-  YEARLY = 'yearly'
+  DAILY = 'diaria',
+  MONTHLY = 'mensal',
+  YEARLY = 'anual'
 }
 
 export interface IndexEntity {
   index: `${Indexes}`
   rate: number
   refDate: Date
-  frequency: Frequency
+  frequency: `${Frequency}`
 }
 
 export interface Index extends IndexEntity {
