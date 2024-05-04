@@ -31,9 +31,10 @@ export class BacenSelicIndex {
         dayjs(lastIndex.refDate).add(1, 'day')
       )
     }
-    logger.debug('download starting...')
+    logger.info('download starting...')
     const endpoint = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=${this.range.initialDate}&dataFinal=${this.range.finalDate}`
     const readable = await axios.get(endpoint, { responseType: 'stream' })
+    logger.info('processing...')
     return readable.data
   }
 
