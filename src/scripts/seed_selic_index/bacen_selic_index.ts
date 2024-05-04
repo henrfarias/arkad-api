@@ -40,7 +40,7 @@ export class BacenSelicIndex {
   public format(rawSelic: RawSelic, frequency: Frequency): IndexEntity {
     const [day, month, year] = rawSelic.data.split('/')
     const refDate = dayjs(`${year}-${month}-${day}`).toDate()
-    const rate = parseFloat(rawSelic.valor) / 100
+    const rate = Number((parseFloat(rawSelic.valor) / 100).toFixed(8))
     return {
       index: Indexes.SELIC,
       rate,
@@ -50,6 +50,7 @@ export class BacenSelicIndex {
   }
 
   public async persist(index: IndexEntity): Promise<void> {
+    logger.debug({ index }, 'persisting index...')
     await this.repository.save(index)
     return
   }
