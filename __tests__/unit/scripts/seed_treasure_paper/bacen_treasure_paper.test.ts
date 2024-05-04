@@ -262,6 +262,15 @@ describe('Script to download, filter, format and persist treasure paper register
         purchasePrice: 249757,
         salePrice: 249752
       })
+      repository.save({
+        title: 'Tesouro Selic 2006',
+        index: Indexes.SELIC,
+        dueDate: new Date('2006-01-18T03:00:00Z'),
+        refDate: new Date('2005-10-30T03:00:00Z'),
+        purchaseFee: 0.0002,
+        purchasePrice: 249757,
+        salePrice: 249752
+      })
       const treasureHandler = new BacenTreasurePaper(
         'Tesouro Selic',
         repository
