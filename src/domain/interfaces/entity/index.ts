@@ -3,9 +3,15 @@ export interface RawSelic {
   valor: string
 }
 
+export interface RawSaving {
+  data: string
+  datafim: string
+  valor: string
+}
+
 export enum Indexes {
   SELIC = 'selic',
-  POUP = 'poup'
+  SAVING = 'poup'
 }
 
 export enum Frequency {
