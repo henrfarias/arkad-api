@@ -45,8 +45,11 @@ export class BacenTreasurePaper {
   public parse(treasure: RawTreasure): TreasurePaper {
     logger.debug({ treasure }, 'parsing...')
     const refDate = this.formatDate(treasure['Data Base'])
-    const purchaseFee =
-      parseFloat(treasure['Taxa Compra Manha'].replace(',', '.')) / 100
+    const purchaseFee = Number(
+      (
+        parseFloat(treasure['Taxa Compra Manha'].replace(',', '.')) / 100
+      ).toFixed(4)
+    )
     const puCompra = parseFloat(treasure['PU Compra Manha'].replace(',', '.'))
     const puVenda = parseFloat(treasure['PU Venda Manha'].replace(',', '.'))
     const dueDate = this.formatDate(treasure['Data Vencimento'])
