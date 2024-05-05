@@ -51,7 +51,10 @@ export class BacenSavingIndex {
         return null
       }
     }
-    // TODO: Get only the first day of the month
+    const [day] = rawSaving.data.split('/')
+    if (day != '01') {
+      return null
+    }
     return rawSaving
   }
 
