@@ -16,11 +16,29 @@ export class GetSelicRatesFromStream extends Controller {
   }
 
   async execute(): Promise<void> {
-    await pipeline(this.stream, this.jsonStream, this.format, this.persist)
+    await pipeline(
+      this.stream,
+      this.jsonStream,
+      this.filter,
+      this.format,
+      this.persist
+    )
       .finally(() => logger.info(`New selic rates: ${this.count}`))
       .catch((error) => logger.error(error))
     return
   }
+
+  private filter = new Transform({
+    readableObjectMode: true,
+    writableObjectMode: true,
+    transform: async (chunk, _, cb) => {
+      const rate = this.handler.filter(chunk.value)
+      if (rate) {
+        return cb(null, chunk)
+      }
+      return cb()
+    }
+  })
 
   private format = new Transform({
     readableObjectMode: true,

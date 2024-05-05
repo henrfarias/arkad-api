@@ -13,6 +13,7 @@ import { beforeAll, describe, expect, test, vi } from 'vitest'
 import { jsonStream } from '@framework/libs/stream-json'
 import axios from 'axios'
 import logger from '@common/logger'
+import { beforeEach } from 'node:test'
 vi.mock('axios')
 
 describe('Script to download, format and persist selic index registers as "Bacen Selic Index"', () => {
@@ -20,6 +21,11 @@ describe('Script to download, format and persist selic index registers as "Bacen
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2024-04-15T10:00:00Z'))
   })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   const { pathname } = new URL(import.meta.url)
   const __dirname = dirname(pathname)
 
@@ -161,7 +167,7 @@ describe('Script to download, format and persist selic index registers as "Bacen
   describe.todo('download -> format -> PERSIST')
 
   describe('all flow', () => {
-    test('should pass through all flow', async () => {
+    test.only('should pass through all flow', async () => {
       const mockStream = createReadStream(
         join(
           __dirname,
@@ -175,16 +181,23 @@ describe('Script to download, format and persist selic index registers as "Bacen
         )
       )
       const indexRepository = new MemoryIndexRepository()
+      indexRepository.save({
+        frequency: Frequency.DAILY,
+        index: Indexes.SELIC,
+        rate: 0.00045513,
+        refDate: new Date('2023-12-05')
+      })
+      vi.spyOn(axios, 'get').mockResolvedValueOnce({ data: mockStream })
       const selicHandler = new BacenSelicIndex(indexRepository)
       const sut = new GetSelicRatesFromStream(
-        mockStream,
+        await selicHandler.download(),
         jsonStream,
         selicHandler
       )
       const persistSpy = vi.spyOn(selicHandler, 'persist')
       await sut.execute()
       sut.done()
-      expect(persistSpy).toBeCalledTimes(100)
+      expect(persistSpy).toBeCalledTimes(99)
     })
   })
 })
