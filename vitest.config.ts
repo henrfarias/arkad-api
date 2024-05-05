@@ -15,7 +15,7 @@ export default defineConfig({
     exclude: ['node_modules', 'data', 'dist'],
     restoreMocks: true,
     coverage: {
-      exclude: ['src/domain/interfaces']
+      exclude: ['src/domain/interfaces', '__tests__']
     }
   }
 })
