@@ -12,8 +12,8 @@ import { jsonStream } from '@framework/libs/stream-json'
 import axios from 'axios'
 import logger from '@common/logger'
 import { beforeEach } from 'node:test'
-import { BacenSavingIndex } from 'src/scripts/seed_poup_index/bacen_saving_index'
-import { GetSavingRatesFromStream } from 'src/scripts/seed_poup_index/get_saving_rates_from_stream'
+import { BacenSavingIndex } from 'src/scripts/seed_saving_index/bacen_saving_index'
+import { GetSavingRatesFromStream } from 'src/scripts/seed_saving_index/get_saving_rates_from_stream'
 vi.mock('axios')
 
 describe('Script to download, format and persist saving index registers as "Bacen Saving Index"', () => {

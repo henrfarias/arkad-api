@@ -167,7 +167,7 @@ describe('Script to download, format and persist selic index registers as "Bacen
   describe.todo('download -> format -> PERSIST')
 
   describe('all flow', () => {
-    test.only('should pass through all flow', async () => {
+    test('should pass through all flow', async () => {
       const mockStream = createReadStream(
         join(
           __dirname,
