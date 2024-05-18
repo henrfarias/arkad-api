@@ -33,10 +33,11 @@ model Index {
 }
 
 model ProjectiveRate {
-  id         String  @id @default(uuid())
-  annualRate Float   @map("taxa_anual")
-  index      Indexes @map("indice")
-  refYear    Int     @map("ano_ref")
+  id              String   @id @default(uuid())
+  annualRate      Float    @map("taxa_anual")
+  index           Indexes  @map("indice")
+  refYear         Int      @map("ano_ref")
+  calculationDate DateTime @map("data_calculo")
 
   @@map("taxa_projetiva")
 }
