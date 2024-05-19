@@ -1,0 +1,35 @@
+{
+  "@odata.context": "https://was-p.bcnet.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata$metadata#ExpectativasMercadoAnuais(Indicador,Data,DataReferencia,Media)",
+  "value": [
+    {
+      "Indicador": "Selic",
+      "Data": "2024-05-10",
+      "DataReferencia": "2024",
+      "Media": 9.8080
+    },
+    {
+      "Indicador": "Selic",
+      "Data": "2024-05-10",
+      "DataReferencia": "2025",
+      "Media": 9.1091
+    },
+    {
+      "Indicador": "Selic",
+      "Data": "2024-05-10",
+      "DataReferencia": "2026",
+      "Media": 8.9521
+    },
+    {
+      "Indicador": "Selic",
+      "Data": "2024-05-10",
+      "DataReferencia": "2027",
+      "Media": 8.8778
+    },
+    {
+      "Indicador": "Selic",
+      "Data": "2024-05-10",
+      "DataReferencia": "2028",
+      "Media": 8.8182
+    }
+  ]
+}
