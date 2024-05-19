@@ -4,9 +4,7 @@ import {
   ProjectiveRateRepository
 } from '@domain/interfaces/repositories/projective_rate.repository'
 
-export class MemoryProjectiveRateRepository
-  implements ProjectiveRateRepository
-{
+export class MemoryProjectiveRateRepository implements ProjectiveRateRepository {
   get(_input: InputGetProjectiveRate): Promise<ProjectiveRate[]> {
     throw new Error('Method not implemented.')
   }
