@@ -15,5 +15,5 @@ export interface ProjectiveRateEntity {
 }
 
 export interface ProjectiveRate extends ProjectiveRateEntity {
-  id?: string
+  id: string
 }
