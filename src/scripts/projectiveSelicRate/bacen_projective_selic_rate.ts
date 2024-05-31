@@ -8,7 +8,7 @@ import { ProjectiveRateRepository } from '@domain/interfaces/repositories/projec
 import axios from 'axios'
 
 export class BacenProjectiveSelicRate {
-  protected currentRates: ProjectiveRate[] = []
+  protected currentRates: ProjectiveRate[] | null = null
   readonly newRates: RawProjectiveSelicRate[] = []
   constructor(private repository: ProjectiveRateRepository) {}
 
@@ -22,7 +22,7 @@ export class BacenProjectiveSelicRate {
     return result.data.value
   }
   public async filter(input: RawProjectiveSelicRate): Promise<RawProjectiveSelicRate | null> {
-    if (this.currentRates.length === 0) {
+    if (this.currentRates === null) {
       this.currentRates = await this.repository.getNextYears({
         howManyYears: 5,
         where: { index: Indexes.SELIC }
