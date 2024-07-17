@@ -4,7 +4,7 @@ import { MemoryProjectiveRateRepository } from '@test/utils/mocks/repositories/m
 import axios from 'axios'
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
-import { BacenProjectiveSelicRate } from 'src/scripts/projectiveSelicRate/bacen_projective_selic_rate'
+import { BacenProjectiveSelicRate } from 'src/scripts/projective_selic_rate/bacen_projective_selic_rate'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 vi.mock('axios')
 

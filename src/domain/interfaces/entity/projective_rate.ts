@@ -9,7 +9,7 @@ export interface RawProjectiveSelicRate {
 
 export interface ProjectiveRateEntity {
   annualRate: number
-  index: Indexes
+  index: `${Indexes}`
   refYear: number
   calculationDate: Date
 }
